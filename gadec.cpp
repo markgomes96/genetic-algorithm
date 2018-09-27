@@ -1,4 +1,8 @@
 #include <iostream>
+#include <sstream>
+#include <fstream>
+#include <string>
+#include <vector>
 #include <climits>
 #include <cstdio>
 #include <cstdlib>
@@ -6,6 +10,57 @@
 #include <ctime>
 
 using namespace std;
+
+struct atom
+{
+	string element;
+	int count;
+};
+
+//Molecule -> Chromesome Convertion
+class Molecule
+{
+	public:
+	vector<atom> molecule;
+	int geneLength = 0;
+
+	void buildMolecule(string filename)		//reads in the molecule data from file
+	{
+		ifstream infile;
+		infile.open(filename.c_str());
+
+		if(!infile.is_open())		//checks if file is available
+		{
+			cout << "Error - Invalid File Name Entered" << endl;
+			exit(1);
+		}
+
+		string word1, word2;
+		atom temp = atom();
+		//atom temp = {NULL, 0};
+		while(infile.peek() != EOF)			//iterate through entire file
+		{
+			getline(infile, word1, ' ');
+			getline(infile, word2, '\n');
+			temp.element = word1;
+			temp.count = atoi(word2.c_str());
+			molecule.push_back(temp);			//store molecule info
+		}
+	
+		//display inputed molecule info
+		vector<atom>::iterator it;
+		for(it = molecule.begin(); it != molecule.end(); ++it)
+		{
+			cout << it -> element << " : " << it -> count << endl;
+		}
+		//
+	}
+
+	void calculateGenes()		//uses total atom count to calc gene length
+	{
+		
+	}
+};
 
 //Classes
 class Individual
@@ -19,23 +74,29 @@ class Individual
 
     void setValues()
     {
+		/*
         //Set genes randomly for each individual
-	for (int i = 0; i < geneLength; i++) 
-	{
-	    randInt = rand() % 3;
-	    if( randInt == 0 && fitCap < 4)
-	    {
-	    	genes[i] = 1;
-		fitCap++;
-	    }
-	    else
-	    {
-	        genes[i] = 0;
-	    }
+		for (int i = 0; i < geneLength; i++) 
+		{
+	    	randInt = rand() % 3;
+	    	if( randInt == 0 && fitCap < 4)
+	    	{
+	    		genes[i] = 1;
+				fitCap++;
+	    	}
+	    	else
+	    	{
+	        	genes[i] = 0;
+	    	}
         }
-	fitness = 0;
+		fitness = 0;
+		*/
+
+		//Set genes randomly only for positons
+
     }
  
+	//***Change to accept run data and calcuate fitness based on lowest stored min energy
     void calcFitness()
     {
         fitness = 0;
@@ -137,6 +198,7 @@ Individual getFittestOffspring();
 void addFittestOffspring();
 
 //Global variables
+Molecule molecule;
 Population population;
 Individual fittest;
 Individual secondFittest;
@@ -144,6 +206,9 @@ int generationCount = 0;
 
 int main(int argc, char* argv[])
 {
+	molecule.buildMolecule(argv[1]);
+
+	/*
     srand((unsigned)time(0));
 
     //Initialize population
@@ -176,18 +241,6 @@ int main(int argc, char* argv[])
 
         //Calculate new fitness value
         population.calculateFitness();
-
-	/*
-	for(int p = 0; p < 10; p++)
-	{
-        cout << "Individual: " << p << " | ";
-        for(int g = 0; g < 5; g++)
-	    {
-	        cout << population.individuals[p].genes[g] << " ";
-        }   
-        cout << endl;
-	}
-	*/
 	
         cout << "Generation: " << generationCount << " Fittest: " << population.fittest << endl;
     }
@@ -203,6 +256,7 @@ int main(int argc, char* argv[])
     }
 
     cout << endl;
+	*/
 }
 
 
