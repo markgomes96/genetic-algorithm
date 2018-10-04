@@ -80,7 +80,7 @@ class Molecule
 		}
 		*/
 		geneSize = atomCount * bitMultiplier;
-		cout << "gene size : " << geneSize << endl;
+		//cout << "gene size : " << geneSize << endl;
 	}
 };
 
@@ -90,40 +90,75 @@ class Individual
 	public:
 	int fitness;
 	int geneLength;
+	int atomCount;
 	vector<int> genes;  
 
 	Individual()
 	{
 		fitness = 0;
-		geneLength = 5;	
+		geneLength = 5;
+		atomCount = 0;	
 	}
 	
-	void setGeneLength(int _geneLength)
+	void setGeneLength(int _geneLength, int _atomCount)
 	{
 		geneLength = _geneLength;
 		//genes = new int[geneLength];
-		cout << "geneLength" << geneLength << endl;
+		//cout << "geneLength" << geneLength << endl;
 		genes.reserve(geneLength);
 		genes.resize(geneLength);
+		atomCount = _atomCount;
 	}
 	
 	void setValues()
 	{
-        	//Set genes randomly for each individual
-		//int randInt;
-		for (int i = 0; i < geneLength; i++) 
+        //Set genes randomly for each individual
+		int randInt;
+		for (int i = 0; i < geneLength; i += ((geneLength / atomCount) / 3)) 		//iterate through every dimension for every atom
 		{
-	    		//randInt = rand() % 3;		//set percent chance for one
-			//if( randInt == 0 )
-			if(rand() % 2 == 1)
+	    	randInt = rand() % 2;		//set sign bit 0-1
+			if(randInt == 1)
 			{
-	    			genes[i] = 1;
+	    		genes[i] = 1;
 	 		}
-	    		else
-	    		{
-	        		genes[i] = 0;
-	    		}
-        	}
+	    	else
+	    	{
+	        	genes[i] = 0;
+	    	}
+
+			for(int j = i + 1; j < i + (((geneLength / atomCount) / 3) - 1); j = j + 4)		//iterate through every decimal digit
+			{
+				int bitNum = 4;				//number of bits per digit
+				int binArray[bitNum];
+				for(int x = 0; x < bitNum; x++)		//clear bitNum array
+				{
+					binArray[x] = 0;
+				}
+
+				randInt = rand() % 10;		//random number 0-9
+
+				int randIntPerm = randInt;			//remove later
+
+				int count = 0;
+				while(randInt > 0)			//convert decimal digit to binary
+				{
+					binArray[count] = randInt % 2;
+					randInt = randInt / 2;
+					count++;
+				}
+
+				//cout << "randInt : " << randIntPerm << " : " << binArray[3] << binArray[2] << binArray[1] << binArray[0] << endl;
+
+				int index = 0;
+				for(int k = bitNum - 1; k >= 0; k--)
+				{
+					index = (bitNum-1) - k;
+					//cout << "index : " << index << "	j : " << j << endl;
+					genes[j + index] = binArray[k];
+				}
+			}
+        }
+			
 		fitness = 0;
 	}
 
@@ -157,7 +192,7 @@ class Population
 	}
 
 	//Initialize population
-	void initializePopulation(int _popSize, int _geneSize)
+	void initializePopulation(int _popSize, int _geneSize, int _atomCount)
 	{
 		popSize = _popSize;
 		individuals.reserve(popSize);
@@ -165,7 +200,7 @@ class Population
 
         	for(int i = 0; i < popSize; i++)
         	{
-			individuals[i].setGeneLength(_geneSize);
+			individuals[i].setGeneLength(_geneSize, _atomCount);
             		individuals[i].setValues();
         	}
 	}
@@ -262,7 +297,7 @@ int main(int argc, char* argv[])
 
 	srand((unsigned)time(0));
 
-	population.initializePopulation(POPULATION_SIZE, molecule.geneSize);		//initialize the population
+	population.initializePopulation(POPULATION_SIZE, molecule.geneSize, molecule.atomCount);		//initialize the population
 	
 	//print out all individuals
 	for (int i = 0; i < population.popSize; i++) 
@@ -277,6 +312,8 @@ int main(int argc, char* argv[])
 	////////////////////////////
 
 	testPopulation();			//test each individual in tester program
+
+	
 
 	/*
 	population.calculateFitness();			//calculate fitness of each individual
@@ -320,16 +357,39 @@ int main(int argc, char* argv[])
 void testPopulation()		//run individual's gene through tester program
 {
 	//convert genes to string, match with element, and write string to .xyz file
+	/*
+	string fileInfo[molecule.atomCount + 2];
+	for (int x = 0; x < (molecule.atomCount + 2); x++)		//clear fileInfo array
+	{
+		fileInfo[x].clear();
+	}
+	fileInfo[0] = to_string(molecule.atomCount);
+	fileInfo[1] = "\n";
+	*/
+	string fileInfo[molecule.atomCount + 2];
 	string elementInfo;
+	stringstream ss;
+
 	int fractCount = 0;
 	for(int i = 0; i < population.popSize; i++)		//iterate through individuals
 	{
+		/*
 		cout << "Individual : " << (i+1) << "	Genes : "; 
 		for (int z = 0; z < molecule.geneSize; z++)
 		{
 			cout << population.individuals[i].genes[z];
 		}
 		cout << endl;
+		*/
+
+		for(int x = 0; x < molecule.atomCount + 2; x++)		//sets up number of atoms at top of file
+		{
+			fileInfo[x].clear();
+		}
+		ss << molecule.atomCount;
+		fileInfo[0] = ss.str();
+		ss.str("");
+		fileInfo[1] = "";
 
 		for(int j = 0; j < molecule.atoms.size(); j++)		//iterate through types of atoms
 		{
@@ -337,11 +397,18 @@ void testPopulation()		//run individual's gene through tester program
 			{
 				//cout << "individual : " << i << "	molecule : " << molecule.atoms[j].element << "	count: " << molecule.atoms[j].count << endl;
 				elementInfo = molecule.atoms[j].element + " " + geneToStringConverter(population.individuals[i].genes, molecule.atomCount, fractCount);
-				cout << elementInfo << endl;
+				//cout << elementInfo << endl;
+				fileInfo[2+fractCount] = elementInfo;
 				fractCount++;
 			}
 		}
 		fractCount = 0;
+
+		cout << "Individual : " << i << endl;
+		for(int p = 0; p < molecule.atomCount + 2; p++)		//print out the example file
+		{
+			cout << fileInfo[p] << endl;
+		}
 	}
 }
 
@@ -350,38 +417,40 @@ string geneToStringConverter(vector<int> genes, int atomCount, int fractNum)
 	int atomSegCount = molecule.geneSize / atomCount;
 	string atomSegStr;
 	stringstream ss;
-	int powBin;		//power of 2 to convert binary digit to decimal
-	int binValue = 0;
+	int powBin;				//power of 2 to convert binary digit to decimal
+	int decimalValue = 0;		//decimal value of 4 bits
 	int decPos = 2;
-	for(int i = (atomSegCount * fractNum); i < (atomSegCount * (fractNum+1)); i += (atomSegCount/3))	//interate through each dimension position (x,y,z)
+	for(int i = (atomSegCount * fractNum); i < (atomSegCount * (fractNum+1)); i += (atomSegCount/3))	//interates dimensions (x,y,z) for specified atom
 	{
 		if(genes[i] == 1)		//assign the sign bit
 		{
 			ss << "-";
 		}
 
-		for(int j = i+1; j < (i+((atomSegCount/3)-1)); j=j+4)		//iterate through each character
+		for(int j = i+1; j < (i+((atomSegCount/3)-1)); j=j+4)		//iterate through each character 4 bits at time
 		{
 			//cout << genes[j] << genes[j+1] << genes[j+2] << genes[j+3] << endl;
 			for(int k = j; k < (j+4); k++)			//interate through 4 bits to get numerical value
 			{
 				powBin = 3 - ( k - j );
 				//cout << "powBin : " << powBin << endl;
-				if(genes[i] == 1)
-				{
-					//cout << "added value" << endl; 
-					binValue += pow(2, powBin);
+				if(genes[k] == 1)
+				{ 
+					decimalValue += pow(2, powBin);
 				}
-				//cout << "binValue : " << binValue << endl;
+				//cout << "powBin : " << powBin << "	bit : " << genes[k] << "	decimalValue : " << decimalValue << endl;
 			}
+			
 			/*
-			if(binValue > 9)	//get digits between 0-9
+			if(decimalValue > 9)	//get digits between 0-9
 			{
-				binValue = 9;	
+				decimalValue = 9;	
 			}
-			*/
-			ss << binValue;		//add num character
-			binValue = 0;
+			*/			
+
+			ss << decimalValue;		//add num character
+			decimalValue = 0;
+
 			if(j == (i + 1 + ((decPos-1)*4)))		//add decimal after two digits
 			{
 				ss << ".";
