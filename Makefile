@@ -16,3 +16,9 @@ INCDIRS = -I/usr/include
 .cpp:
 	$(C++)  -O $@.cpp -g $(INCDIRS) $(LIBDIRS) -o $@
 
+clean :
+	rm *.xyz
+
+reset :
+	rm *.xyz
+	rm gadec

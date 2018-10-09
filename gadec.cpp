@@ -8,6 +8,9 @@
 #include <cstdlib>
 #include <cmath>
 #include <ctime>
+#include <memory>
+#include <stdexcept>
+#include <bits/stdc++.h> 
 
 using namespace std;
 
@@ -273,7 +276,10 @@ class Population
 
 //Functions
 void testPopulation();
+void testIndividual(string fileInfo[]);
 string geneToStringConverter(vector<int> genes, int atomCount, int fractNum);
+string executeCommand(const char* cmd);
+string getEnergy(string output);
 void selection();
 void crossover();
 void mutation();
@@ -281,6 +287,7 @@ Individual getFittestOffspring();
 void addFittestOffspring();
 
 //Constants
+string TEST_PROGRAM = "obenergy";
 int POPULATION_SIZE = 10;
 
 //Global variables
@@ -311,9 +318,10 @@ int main(int argc, char* argv[])
 	}
 	////////////////////////////
 
-	testPopulation();			//test each individual in tester program
+	//testPopulation();			//test each individual in tester program
 
-	
+	string output = executeCommand("obenergy gentest.xyz");
+	cout << getEnergy(output) << endl;
 
 	/*
 	population.calculateFitness();			//calculate fitness of each individual
@@ -404,12 +412,34 @@ void testPopulation()		//run individual's gene through tester program
 		}
 		fractCount = 0;
 
+		////
 		cout << "Individual : " << i << endl;
 		for(int p = 0; p < molecule.atomCount + 2; p++)		//print out the example file
 		{
 			cout << fileInfo[p] << endl;
 		}
+		/////
+
+		testIndividual(fileInfo);	//test individual to determine fitness
 	}
+}
+
+void testIndividual(string fileInfo[])
+{
+	string fileName = "gentest.xyz";		//create file based on individual
+	ofstream file;
+	file.open(fileName);
+	for(int i = 0; i < (molecule.atomCount + 2); i++)
+	{
+		file << fileInfo[i] << endl;
+	}
+	file.close();
+	
+	string command = TEST_PROGRAM + " " + fileName;		//convert string command to char array
+	char char_command[command.length()+1];
+	strcpy(char_command, command.c_str());
+	
+	cout << executeCommand(char_command) << endl;		//run command to test file and retrieve system energy
 }
 
 string geneToStringConverter(vector<int> genes, int atomCount, int fractNum)
@@ -465,6 +495,49 @@ string geneToStringConverter(vector<int> genes, int atomCount, int fractNum)
 	ss.str("");
 	
 	return atomSegStr;
+}
+
+string executeCommand(const char* cmd) 
+{
+	array<char, 128> buffer;
+	string result;
+	shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+
+	if (!pipe) throw runtime_error("popen() failed!");
+
+	while (!feof(pipe.get())) 
+	{
+		if (fgets(buffer.data(), 128, pipe.get()) != nullptr)
+		{
+			result += buffer.data();
+		}
+	}
+	return result;
+}
+
+string getEnergy(string output)
+{
+	//split string into string array based on spaces
+	//get the second to last array value
+
+	string str("Split me by whitespaces");
+	string buf;                 	//have a buffer string
+	stringstream ss(output);       	//insert the string into a stream
+
+	vector<string> words; 		//create vector to hold our words
+
+	while (ss >> buf)
+	{
+		words.push_back(buf);
+	}
+
+	vector<string>::iterator it;
+	for(it = words.begin(); it != words.end(); ++it)
+	{
+		cout << *it << endl;
+	}
+
+	return  "bagles";
 }
 
 void selection()					//selcted the two fittest individuals
