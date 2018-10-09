@@ -53,7 +53,6 @@ class Molecule
 
 		string word1, word2;
 		atom temp = atom();
-		//atom temp = {NULL, 0};
 		while(infile.peek() != EOF)			//iterate through entire file
 		{
 			getline(infile, word1, ' ');
@@ -75,15 +74,7 @@ class Molecule
 
 	void calculateGeneSize()		//uses total atom count to calc gene size
 	{
-		/*
-		vector<atom>::iterator it;
-		for(it = atoms.begin(); it != atoms.end(); ++it)
-		{
-			geneSize += (it -> count) * bitMultiplier;
-		}
-		*/
 		geneSize = atomCount * bitMultiplier;
-		//cout << "gene size : " << geneSize << endl;
 	}
 };
 
@@ -91,23 +82,21 @@ class Molecule
 class Individual
 {
 	public:
-	int fitness;
 	int geneLength;
 	int atomCount;
-	vector<int> genes;  
+	vector<int> genes;
+	double fitness;
 
 	Individual()
 	{
-		fitness = 0;
 		geneLength = 5;
-		atomCount = 0;	
+		atomCount = 0;
+		fitness = 0.0;	
 	}
 	
 	void setGeneLength(int _geneLength, int _atomCount)
 	{
 		geneLength = _geneLength;
-		//genes = new int[geneLength];
-		//cout << "geneLength" << geneLength << endl;
 		genes.reserve(geneLength);
 		genes.resize(geneLength);
 		atomCount = _atomCount;
@@ -150,34 +139,30 @@ class Individual
 					count++;
 				}
 
-				//cout << "randInt : " << randIntPerm << " : " << binArray[3] << binArray[2] << binArray[1] << binArray[0] << endl;
-
 				int index = 0;
-				for(int k = bitNum - 1; k >= 0; k--)
+				for(int k = bitNum - 1; k >= 0; k--)		//array in reverse is binary conversion
 				{
 					index = (bitNum-1) - k;
-					//cout << "index : " << index << "	j : " << j << endl;
 					genes[j + index] = binArray[k];
 				}
 			}
         }
 			
-		fitness = 0;
+		fitness = 0.0;
 	}
 
-	//***Change to accept run data and calcuate fitness based on lowest stored min energy
-	void calcFitness(/*double potentialEnergy*/)
+	//calculate fitness based on inputed system energy
+	void calcFitness(double systemEnergy)
 	{
-		fitness = 0;
-        	for(int i = 0; i < 5; i++)
-        	{
-		    	if(genes[i] == 1)
-		    	{
-        		        fitness = fitness + 1;
-		    	}
-        	}
+		if(systemEnergy != 0)		//higher negative energies -> increased fitness
+		{
+			fitness = (-1) * systemEnergy;
+		}
+		else		//if it's zero then no interaction -> very unfit
+		{
+			fitness = -1000.0;
+		}
 	}
-	///////////////////////////////////////////////////////
 };
 
 class Population
@@ -201,11 +186,11 @@ class Population
 		individuals.reserve(popSize);
 		individuals.resize(popSize);
 
-        	for(int i = 0; i < popSize; i++)
-        	{
+		for(int i = 0; i < popSize; i++)
+		{
 			individuals[i].setGeneLength(_geneSize, _atomCount);
-            		individuals[i].setValues();
-        	}
+			individuals[i].setValues();
+		}
 	}
 
 	//Get the fittest individual
@@ -213,16 +198,16 @@ class Population
 	{
 		int maxFit = INT_MIN;
 		int maxFitIndex = 0;
-	        for (int i = 0; i < popSize; i++) 
-	        {
-	            if (maxFit <= individuals[i].fitness) 
-	            {
-	                maxFit = individuals[i].fitness;
-	                maxFitIndex = i;
-	            }
-	        }
-	        fittest = individuals[maxFitIndex].fitness;
-	        return maxFitIndex;
+		for (int i = 0; i < popSize; i++) 
+		{
+			if (maxFit <= individuals[i].fitness) 
+			{
+				maxFit = individuals[i].fitness;
+				maxFitIndex = i;
+			}
+		}
+		fittest = individuals[maxFitIndex].fitness;
+		return maxFitIndex;
 	}
 
 	//Get the second most fittest individual
@@ -234,12 +219,12 @@ class Population
 		{
 			if (individuals[i].fitness > individuals[maxFit1].fitness) 
 		    	{
-                		maxFit2 = maxFit1;
-                		maxFit1 = i;
+            			maxFit2 = maxFit1;
+               			maxFit1 = i;
         		} 
 	    		else if (individuals[i].fitness > individuals[maxFit2].fitness) 
 	    		{
-                		maxFit2 = i;
+            			maxFit2 = i;
             		}
         	}
         	return maxFit2;
@@ -260,23 +245,11 @@ class Population
 		}
 		return minFitIndex;
 	}
-
-	//Calculate fitness of each individual
-	void calculateFitness() 
-	{
-		/*
-		for (int i = 0; i < popSize; i++) 
-		{
-			individuals[i].calcFitness();
-		}
-		getFittest();
-		*/
-	}
 };
 
-//Functions
+//FUNCTIONS
 void testPopulation();
-void testIndividual(string fileInfo[]);
+void testIndividual(string fileInfo[], int ind);
 string geneToStringConverter(vector<int> genes, int atomCount, int fractNum);
 string executeCommand(const char* cmd);
 string getEnergy(string output);
@@ -286,11 +259,11 @@ void mutation();
 Individual getFittestOffspring();
 void addFittestOffspring();
 
-//Constants
+//CONSTANTS
 string TEST_PROGRAM = "obenergy";
-int POPULATION_SIZE = 10;
+int POPULATION_SIZE = 100;
 
-//Global variables
+//GLOBALS
 Molecule molecule;
 Population population;
 Individual fittest;
@@ -305,27 +278,15 @@ int main(int argc, char* argv[])
 	srand((unsigned)time(0));
 
 	population.initializePopulation(POPULATION_SIZE, molecule.geneSize, molecule.atomCount);		//initialize the population
-	
-	//print out all individuals
-	for (int i = 0; i < population.popSize; i++) 
+
+	testPopulation();			//execute each individual in test program to calcuate fitness
+
+	for(int i = 0; i < population.popSize; i++)
 	{
-		cout << "Individual : " << (i+1) << "	Genes : "; 
-		for (int j = 0; j < molecule.geneSize; j++)
-		{
-			cout << population.individuals[i].genes[j];
-		}
-		cout << endl;
+		cout << "Ind : " << i << " 		Fitness : " << population.individuals[i].fitness << endl;
 	}
-	////////////////////////////
-
-	//testPopulation();			//test each individual in tester program
-
-	string output = executeCommand("obenergy gentest.xyz");
-	cout << getEnergy(output) << endl;
-
+	
 	/*
-	population.calculateFitness();			//calculate fitness of each individual
-
 	cout << "Generation: " << generationCount << " Fittest: " << population.fittest << endl;
     
 	while (population.fittest < 5) 			//while population gets an individual with maximum fitness
@@ -365,15 +326,6 @@ int main(int argc, char* argv[])
 void testPopulation()		//run individual's gene through tester program
 {
 	//convert genes to string, match with element, and write string to .xyz file
-	/*
-	string fileInfo[molecule.atomCount + 2];
-	for (int x = 0; x < (molecule.atomCount + 2); x++)		//clear fileInfo array
-	{
-		fileInfo[x].clear();
-	}
-	fileInfo[0] = to_string(molecule.atomCount);
-	fileInfo[1] = "\n";
-	*/
 	string fileInfo[molecule.atomCount + 2];
 	string elementInfo;
 	stringstream ss;
@@ -381,15 +333,6 @@ void testPopulation()		//run individual's gene through tester program
 	int fractCount = 0;
 	for(int i = 0; i < population.popSize; i++)		//iterate through individuals
 	{
-		/*
-		cout << "Individual : " << (i+1) << "	Genes : "; 
-		for (int z = 0; z < molecule.geneSize; z++)
-		{
-			cout << population.individuals[i].genes[z];
-		}
-		cout << endl;
-		*/
-
 		for(int x = 0; x < molecule.atomCount + 2; x++)		//sets up number of atoms at top of file
 		{
 			fileInfo[x].clear();
@@ -403,28 +346,18 @@ void testPopulation()		//run individual's gene through tester program
 		{
 			for(int k = 0; k < molecule.atoms[j].count; k++)	//iterate through count of type of atom
 			{
-				//cout << "individual : " << i << "	molecule : " << molecule.atoms[j].element << "	count: " << molecule.atoms[j].count << endl;
 				elementInfo = molecule.atoms[j].element + " " + geneToStringConverter(population.individuals[i].genes, molecule.atomCount, fractCount);
-				//cout << elementInfo << endl;
 				fileInfo[2+fractCount] = elementInfo;
 				fractCount++;
 			}
 		}
 		fractCount = 0;
 
-		////
-		cout << "Individual : " << i << endl;
-		for(int p = 0; p < molecule.atomCount + 2; p++)		//print out the example file
-		{
-			cout << fileInfo[p] << endl;
-		}
-		/////
-
-		testIndividual(fileInfo);	//test individual to determine fitness
+		testIndividual(fileInfo, i);	//test individual to determine fitness
 	}
 }
 
-void testIndividual(string fileInfo[])
+void testIndividual(string fileInfo[], int ind)
 {
 	string fileName = "gentest.xyz";		//create file based on individual
 	ofstream file;
@@ -439,7 +372,9 @@ void testIndividual(string fileInfo[])
 	char char_command[command.length()+1];
 	strcpy(char_command, command.c_str());
 	
-	cout << executeCommand(char_command) << endl;		//run command to test file and retrieve system energy
+	double systemEnergy = stod(getEnergy(executeCommand(char_command)));
+
+	population.individuals[ind].calcFitness(systemEnergy);			//execute individual file and calc fitness with energy
 }
 
 string geneToStringConverter(vector<int> genes, int atomCount, int fractNum)
@@ -447,7 +382,7 @@ string geneToStringConverter(vector<int> genes, int atomCount, int fractNum)
 	int atomSegCount = molecule.geneSize / atomCount;
 	string atomSegStr;
 	stringstream ss;
-	int powBin;				//power of 2 to convert binary digit to decimal
+	int powBin;					//power of 2 to convert binary digit to decimal
 	int decimalValue = 0;		//decimal value of 4 bits
 	int decPos = 2;
 	for(int i = (atomSegCount * fractNum); i < (atomSegCount * (fractNum+1)); i += (atomSegCount/3))	//interates dimensions (x,y,z) for specified atom
@@ -459,26 +394,17 @@ string geneToStringConverter(vector<int> genes, int atomCount, int fractNum)
 
 		for(int j = i+1; j < (i+((atomSegCount/3)-1)); j=j+4)		//iterate through each character 4 bits at time
 		{
-			//cout << genes[j] << genes[j+1] << genes[j+2] << genes[j+3] << endl;
 			for(int k = j; k < (j+4); k++)			//interate through 4 bits to get numerical value
 			{
 				powBin = 3 - ( k - j );
-				//cout << "powBin : " << powBin << endl;
+
 				if(genes[k] == 1)
 				{ 
 					decimalValue += pow(2, powBin);
 				}
-				//cout << "powBin : " << powBin << "	bit : " << genes[k] << "	decimalValue : " << decimalValue << endl;
 			}
-			
-			/*
-			if(decimalValue > 9)	//get digits between 0-9
-			{
-				decimalValue = 9;	
-			}
-			*/			
 
-			ss << decimalValue;		//add num character
+			ss << decimalValue;			//add num character
 			decimalValue = 0;
 
 			if(j == (i + 1 + ((decPos-1)*4)))		//add decimal after two digits
@@ -486,9 +412,7 @@ string geneToStringConverter(vector<int> genes, int atomCount, int fractNum)
 				ss << ".";
 			}
 		}
-		ss << " ";		//add space between each dimension
-
-		//ss << genes[i];
+		ss << " ";				//add space between each dimension
 	}
 
 	atomSegStr = ss.str();		//add full string with all dimensions
@@ -497,7 +421,7 @@ string geneToStringConverter(vector<int> genes, int atomCount, int fractNum)
 	return atomSegStr;
 }
 
-string executeCommand(const char* cmd) 
+string executeCommand(const char* cmd) 			//execute command and retrieve the output
 {
 	array<char, 128> buffer;
 	string result;
@@ -517,27 +441,17 @@ string executeCommand(const char* cmd)
 
 string getEnergy(string output)
 {
-	//split string into string array based on spaces
-	//get the second to last array value
-
-	string str("Split me by whitespaces");
 	string buf;                 	//have a buffer string
 	stringstream ss(output);       	//insert the string into a stream
 
-	vector<string> words; 		//create vector to hold our words
+	vector<string> words; 			//create vector to hold our words
 
-	while (ss >> buf)
+	while (ss >> buf)				//store words in buffer to vector
 	{
 		words.push_back(buf);
 	}
 
-	vector<string>::iterator it;
-	for(it = words.begin(); it != words.end(); ++it)
-	{
-		cout << *it << endl;
-	}
-
-	return  "bagles";
+	return words.end()[-2];			//return 2nd to last string value
 }
 
 void selection()					//selcted the two fittest individuals
@@ -561,8 +475,6 @@ void crossover()				//selects two random segments of genes from fit individuals
 {
 	//Select a random crossover point
 	int crossOverPoint = (rand() % population.individuals[0].geneLength);
-
-	//cout << "Cross over point : "  << crossOverPoint << endl;
 
 	//Swap values among parents
 	for (int i = 0; i < crossOverPoint; i++) 
@@ -612,8 +524,8 @@ Individual getFittestOffspring()		//get fittest offspring
 void addFittestOffspring()			//replace least fittest individual from most fittest offspring
 {
 	//Update fitness values of offspring
-	fittest.calcFitness();
-	secondFittest.calcFitness();
+	//fittest.calcFitness();
+	//secondFittest.calcFitness();
 
 	//Get index of least fit individual
 	int leastFittestIndex = population.getLeastFittestIndex();
