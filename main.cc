@@ -22,13 +22,13 @@ int main(int argc, char* argv[])
 
 	for(int i = 0; i < population.popSize; i++)
 	{
-		cout << "Ind : " << i << " 		Fitness : " << population.individuals[i].fitness << endl;
+		cout << "Ind : " << i << " 		Fitness : " << setprecision(8) << population.individuals[i].fitness << endl;
 	}
 	
-	cout << "Generation: " << generationCount << " Fittest: " << population.fittest << endl;
+	cout << "Generation: " << generationCount << " Fittest: " << setprecision(8) << population.fittest << endl;
 	
 	int loopcount = 0;    
-	while (loopcount < 1000)		//population.fittest < 5) 		//while population gets an individual with maximum fitness
+	while (loopcount < 10000)		//population.fittest < 5) 		//while population gets an individual with maximum fitness
 	{
 		generationCount = generationCount + 1;
 
@@ -46,13 +46,13 @@ int main(int argc, char* argv[])
 		testPopulation();				//calculate new fitness values
 		population.getFittest();
 
-		cout << "Generation: " << generationCount << " Fittest: " << population.fittest << endl;
+		cout << "Generation: " << generationCount << " Fittest: " << setprecision(8) << population.fittest << endl;
 		
 		loopcount++;
 	}
 
 	cout << "\nSolution found in generation " << generationCount << endl;
-	cout << "Fitness: " << population.fittest << endl;
+	cout << "Fitness: " << setprecision(8) << population.fittest << endl;
 	cout << "Genes: " << endl;
 
 	int fitIndex = population.getFittest();
@@ -61,6 +61,6 @@ int main(int argc, char* argv[])
 		cout << population.individuals[fitIndex].genes[i];
 	}
 
-	cout << "\n \n MINIMUM ENERGY OF SYSTEM : " << -(population.fittest) << endl;
+	cout << "\n \n MINIMUM ENERGY OF SYSTEM : " << setprecision(8) << -(population.fittest) << endl;
 	cout << endl;
 }

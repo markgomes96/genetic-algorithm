@@ -11,7 +11,7 @@ class Population
 
 	int popSize;				//variables
 	vector<Individual> individuals;
-	int fittest;
+	double fittest;
 
 	Population();		//constructor
 	
