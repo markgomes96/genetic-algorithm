@@ -1,4 +1,5 @@
 #include "includes.h"
+#include "structs.h"
 #include "globals.h"
 #include "prototypes.h"
 
@@ -59,7 +60,7 @@ void testGenes(string fileInfo[], int ind)
 	}
 	file.close();
 	
-	string command = TEST_PROGRAM + " " + fileName;		//convert string command to char array
+	string command = string(TEST_PROGRAM) + " " + string(fileName);		//convert string command to char array
 	char char_command[command.length()+1];
 	strcpy(char_command, command.c_str());
 	

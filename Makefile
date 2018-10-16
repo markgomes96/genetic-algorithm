@@ -12,27 +12,27 @@ INCDIRS = -I/usr/include
 LDLIBS =  -lglut -lGL -lGLU -lX11 -lm
 
 INCLUDES   = includes.h
-HEADERS    = constants.h structs.h Graphics.h Shape.h
+HEADERS    = Molecule.h Individual.h Population.h structs.h
 PROTOTYPES = prototypes.h
 GLOBALS    = globals.h
-OBJS 	   = Graphics.o input.o display.o Shape.o
+OBJS 	   = Molecule.o Individual.o Population.o genalg.o
 
-all : anitran
+all : mingen
 
-anitran: main.o $(INCLUDES) $(HEADERS) $(PROTOTYPES) $(GLOBALS) $(OBJS) 
-	$(C++) -o anitran main.o $(OBJS) $(INCDIRS) $(LIBDIRS) $(LDLIBS) 
+mingen: main.o $(INCLUDES) $(HEADERS) $(PROTOTYPES) $(GLOBALS) $(OBJS) 
+	$(C++) -o mingen main.o $(OBJS) $(INCDIRS) $(LIBDIRS) $(LDLIBS) 
 
-Graphics.o : Graphics.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES)
-	$(C++) -c Graphics.cc
+Molecule.o : Molecule.cc $(INCLUDES) $(HEADERS)
+	$(C++) -c Molecule.cc
  
-Shape.o : Shape.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES) $(GLOBALS)
-	$(C++) -c Shape.cc
+Individual.o : Individual.cc $(INCLUDES) $(HEADERS)
+	$(C++) -c Individual.cc
 
-display.o : display.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES) $(GLOBALS)
-	$(C++) -c display.cc
+Population.o : Population.cc $(INCLUDES) $(HEADERS)
+	$(C++) -c Population.cc
 
-input.o : input.cc $(INCLUDES)
-	$(C++) -c input.cc
+genalg.o : genalg.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES)
+	$(C++) -c genalg.cc
 
 main.o : main.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES) $(OBJS) 
 	$(C++) -c main.cc

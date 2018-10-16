@@ -1,4 +1,8 @@
 #include "includes.h"
+#include "structs.h"
+
+#ifndef INDIVIDUAL_H
+#define INDIVIDUAL_H
 
 class Individual
 {
@@ -18,3 +22,5 @@ class Individual
 	bool checkGeneChange();
 	void updateGeneRecord();
 };
+
+#endif

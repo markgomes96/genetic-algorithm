@@ -1,5 +1,7 @@
 #include "includes.h"
+#include "structs.h"
 #include "globals.h"
+#include "globals.cc"
 #include "prototypes.h"
 
 #include "Molecule.h"
@@ -18,17 +20,15 @@ int main(int argc, char* argv[])
 	testPopulation();			//execute each individual in test program to calcuate fitness
 	population.getFittest();
 
-	/*
 	for(int i = 0; i < population.popSize; i++)
 	{
 		cout << "Ind : " << i << " 		Fitness : " << population.individuals[i].fitness << endl;
 	}
-	*/
-
+	
 	cout << "Generation: " << generationCount << " Fittest: " << population.fittest << endl;
 	
 	int loopcount = 0;    
-	while (loopcount < 10)		//population.fittest < 5) 		//while population gets an individual with maximum fitness
+	while (loopcount < 1000)		//population.fittest < 5) 		//while population gets an individual with maximum fitness
 	{
 		generationCount = generationCount + 1;
 

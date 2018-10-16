@@ -1,4 +1,8 @@
 #include "includes.h"
+#include "structs.h"
+
+#ifndef MOLECULE_H
+#define MOLECULE_H
 
 class Molecule
 {
@@ -18,3 +22,5 @@ class Molecule
 	
 	private:	
 };
+
+#endif

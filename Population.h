@@ -1,4 +1,9 @@
 #include "includes.h"
+#include "structs.h"
+#include "Individual.h"
+
+#ifndef POPULATION_H
+#define POPULATION_H
 
 class Population
 {
@@ -15,3 +20,5 @@ class Population
 	int getSecondFittest();
 	int getLeastFittestIndex();
 };
+
+#endif
