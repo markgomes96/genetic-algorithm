@@ -85,6 +85,7 @@ class Individual
 	int geneLength;
 	int atomCount;
 	vector<int> genes;
+	vector<int> oldgenes;
 	double fitness;
 
 	Individual()
@@ -99,24 +100,26 @@ class Individual
 		geneLength = _geneLength;
 		genes.reserve(geneLength);
 		genes.resize(geneLength);
+		oldgenes.reserve(geneLength);
+		oldgenes.resize(geneLength);
 		atomCount = _atomCount;
 	}
 	
 	void setValues()
 	{
-        //Set genes randomly for each individual
+        	//Set genes randomly for each individual
 		int randInt;
 		for (int i = 0; i < geneLength; i += ((geneLength / atomCount) / 3)) 		//iterate through every dimension for every atom
 		{
-	    	randInt = rand() % 2;		//set sign bit 0-1
+	    		randInt = rand() % 2;		//set sign bit 0-1
 			if(randInt == 1)
 			{
 	    		genes[i] = 1;
 	 		}
-	    	else
-	    	{
-	        	genes[i] = 0;
-	    	}
+	    		else
+	    		{
+	        		genes[i] = 0;
+	    		}
 
 			for(int j = i + 1; j < i + (((geneLength / atomCount) / 3) - 1); j = j + 4)		//iterate through every decimal digit
 			{
@@ -146,8 +149,12 @@ class Individual
 					genes[j + index] = binArray[k];
 				}
 			}
-        }
-			
+        	}
+		
+		for (int i = 0; i < genes.size(); i++)
+		{ 
+        		oldgenes[i] = 0; 	
+		}		
 		fitness = 0.0;
 	}
 
@@ -162,6 +169,30 @@ class Individual
 		{
 			fitness = -1000.0;
 		}
+	}
+
+	//checks if the genes where changed
+	bool checkGeneChange()
+	{
+		bool changed = false;
+		
+		for(int i = 0; i < genes.size(); i++)
+		{
+			if(genes[i] != oldgenes[i])
+			{
+				changed = true;
+			}
+		}
+		
+		return changed;
+	}
+
+	void updateGeneRecord()
+	{
+		for (int i = 0; i < genes.size(); i++)
+		{ 
+        		oldgenes[i] = genes[i];	
+		}	
 	}
 };
 
@@ -249,7 +280,8 @@ class Population
 
 //FUNCTIONS
 void testPopulation();
-void testIndividual(string fileInfo[], int ind);
+void testIndividual(int ind);
+void testGenes(string fileInfo[], int ind);
 string geneToStringConverter(vector<int> genes, int atomCount, int fractNum);
 string executeCommand(const char* cmd);
 string getEnergy(string output);
@@ -261,7 +293,7 @@ void addFittestOffspring();
 
 //CONSTANTS
 string TEST_PROGRAM = "obenergy";
-int POPULATION_SIZE = 100;
+int POPULATION_SIZE = 10;
 
 //GLOBALS
 Molecule molecule;
@@ -280,16 +312,19 @@ int main(int argc, char* argv[])
 	population.initializePopulation(POPULATION_SIZE, molecule.geneSize, molecule.atomCount);		//initialize the population
 
 	testPopulation();			//execute each individual in test program to calcuate fitness
+	population.getFittest();
 
+	/*
 	for(int i = 0; i < population.popSize; i++)
 	{
 		cout << "Ind : " << i << " 		Fitness : " << population.individuals[i].fitness << endl;
 	}
-	
-	/*
+	*/
+
 	cout << "Generation: " << generationCount << " Fittest: " << population.fittest << endl;
-    
-	while (population.fittest < 5) 			//while population gets an individual with maximum fitness
+	
+	int loopcount = 0;    
+	while (loopcount < 10)		//population.fittest < 5) 		//while population gets an individual with maximum fitness
 	{
 		generationCount = generationCount + 1;
 
@@ -304,9 +339,12 @@ int main(int argc, char* argv[])
 
 		addFittestOffspring();			//add fittest offspring to population
 
-		population.calculateFitness();		//calculate new fitness value
-	
+		testPopulation();				//calculate new fitness values
+		population.getFittest();
+
 		cout << "Generation: " << generationCount << " Fittest: " << population.fittest << endl;
+		
+		loopcount++;
 	}
 
 	cout << "\nSolution found in generation " << generationCount << endl;
@@ -314,50 +352,58 @@ int main(int argc, char* argv[])
 	cout << "Genes: " << endl;
 
 	int fitIndex = population.getFittest();
-	for (int i = 0; i < 5; i++) 
+	for (int i = 0; i < molecule.geneSize; i++) 
 	{
 		cout << population.individuals[fitIndex].genes[i];
 	}
 
+	cout << "\n \n MINIMUM ENERGY OF SYSTEM : " << -(population.fittest) << endl;
 	cout << endl;
-	*/
 }
 
 void testPopulation()		//run individual's gene through tester program
+{
+	for(int i = 0; i < population.popSize; i++)
+	{
+		if(population.individuals[i].checkGeneChange())
+		{
+			testIndividual(i);
+			population.individuals[i].updateGeneRecord();
+		}
+	}
+}
+
+void testIndividual(int ind)
 {
 	//convert genes to string, match with element, and write string to .xyz file
 	string fileInfo[molecule.atomCount + 2];
 	string elementInfo;
 	stringstream ss;
 
-	int fractCount = 0;
-	for(int i = 0; i < population.popSize; i++)		//iterate through individuals
+	for(int x = 0; x < molecule.atomCount + 2; x++)		//sets up number of atoms at top of file
 	{
-		for(int x = 0; x < molecule.atomCount + 2; x++)		//sets up number of atoms at top of file
-		{
-			fileInfo[x].clear();
-		}
-		ss << molecule.atomCount;
-		fileInfo[0] = ss.str();
-		ss.str("");
-		fileInfo[1] = "";
-
-		for(int j = 0; j < molecule.atoms.size(); j++)		//iterate through types of atoms
-		{
-			for(int k = 0; k < molecule.atoms[j].count; k++)	//iterate through count of type of atom
-			{
-				elementInfo = molecule.atoms[j].element + " " + geneToStringConverter(population.individuals[i].genes, molecule.atomCount, fractCount);
-				fileInfo[2+fractCount] = elementInfo;
-				fractCount++;
-			}
-		}
-		fractCount = 0;
-
-		testIndividual(fileInfo, i);	//test individual to determine fitness
+		fileInfo[x].clear();
 	}
+	ss << molecule.atomCount;
+	fileInfo[0] = ss.str();
+	ss.str("");
+	fileInfo[1] = "";
+	
+	int fractCount = 0;
+	for(int j = 0; j < molecule.atoms.size(); j++)		//iterate through types of atoms
+	{
+		for(int k = 0; k < molecule.atoms[j].count; k++)	//iterate through count of type of atom
+		{
+			elementInfo = molecule.atoms[j].element + " " + geneToStringConverter(population.individuals[ind].genes, molecule.atomCount, fractCount);
+			fileInfo[2+fractCount] = elementInfo;
+			fractCount++;
+		}
+	}
+
+	testGenes(fileInfo, ind);	//test individual to determine fitness
 }
 
-void testIndividual(string fileInfo[], int ind)
+void testGenes(string fileInfo[], int ind)
 {
 	string fileName = "gentest.xyz";		//create file based on individual
 	ofstream file;
@@ -450,7 +496,8 @@ string getEnergy(string output)
 	{
 		words.push_back(buf);
 	}
-
+	
+	ss.str("");
 	return words.end()[-2];			//return 2nd to last string value
 }
 
@@ -458,13 +505,18 @@ void selection()					//selcted the two fittest individuals
 {
 	//Select the most fittest individual
 	int fitIndex = population.getFittest();
+	fittest.genes.reserve(molecule.geneSize);
+	fittest.genes.resize(molecule.geneSize);
 	for(int i = 0; i < population.individuals[0].geneLength; i++)
 	{
+		
 		fittest.genes[i] = population.individuals[fitIndex].genes[i];
 	}
 
 	//Select the second most fittest individual
 	fitIndex = population.getSecondFittest();
+	secondFittest.genes.reserve(molecule.geneSize);
+	secondFittest.genes.resize(molecule.geneSize);
 	for(int i = 0; i < population.individuals[0].geneLength; i++)
 	{
 		secondFittest.genes[i] = population.individuals[fitIndex].genes[i];
@@ -524,13 +576,27 @@ Individual getFittestOffspring()		//get fittest offspring
 void addFittestOffspring()			//replace least fittest individual from most fittest offspring
 {
 	//Update fitness values of offspring
-	//fittest.calcFitness();
-	//secondFittest.calcFitness();
+	int fittestIndex = population.getFittest();
+	int secondFittestIndex = population.getSecondFittest();
+	testIndividual(fittestIndex);
+	testIndividual(secondFittestIndex);
 
 	//Get index of least fit individual
 	int leastFittestIndex = population.getLeastFittestIndex();
 
-	//Replace least fittest individual from most fittest offspring
-	population.individuals[leastFittestIndex] = getFittestOffspring();
+	//Replace least fittest individual with 1st offspring
+	for(int i = 0; i < population.individuals[leastFittestIndex].genes.size(); i++)
+	{
+		population.individuals[leastFittestIndex].genes[i] = fittest.genes[i];
+	}
+
+	//get index for second fit individual
+	leastFittestIndex = population.getLeastFittestIndex();
+
+	//Replace second fittest individual with 2nd offspring
+	for(int i = 0; i < population.individuals[leastFittestIndex].genes.size(); i++)
+	{
+		population.individuals[leastFittestIndex].genes[i] = secondFittest.genes[i];
+	}
 }
 
