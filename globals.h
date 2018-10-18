@@ -9,7 +9,7 @@ using namespace std;
 
 //CONSTANTS
 #define TEST_PROGRAM "obenergy"
-#define POPULATION_SIZE 1000
+#define POPULATION_SIZE 10000
 
 //GLOBALS
 extern Molecule molecule;
