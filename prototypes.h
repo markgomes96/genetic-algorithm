@@ -9,3 +9,4 @@ void crossover( void );
 void mutation( void );
 Individual getFittestOffspring( void );
 void addFittestOffspring( void );
+void openFile(int []);

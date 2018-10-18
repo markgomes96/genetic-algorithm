@@ -37,6 +37,8 @@ input.o : input.cc $(INCLUDES)
 main.o : main.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES) $(OBJS) 
 	$(C++) -c main.cc
 
+fileCreate.o: fileCreate.cpp $(INCLUDES) $(HEADERS) $(PROTOTYPES)
+	$(C++) -c fileCreate.cpp
 
 clean :
 	rm gatest.xyz
