@@ -147,7 +147,7 @@ string getEnergy(string output)
 	return words.end()[-2];			//return 2nd to last string value
 }
 
-void printMoleculeStructure(int ind)
+double* printMoleculeStructure(int ind)
 {
 	//convert genes to string, match with element, and write string to .xyz file
 	string fileInfo[molecule.atomCount + 2];
@@ -266,6 +266,9 @@ void printMoleculeStructure(int ind)
 	
 	cout << endl << "H1 - O1 BOND : " << h1o1bond << "A" << endl;
 	cout << "H2 - O1 BOND : " << h2o1bond << "A" << endl;
+
+	static double hobonds[] = { h1o1bond, h2o1bond };
+	return hobonds;
 }
 
 void selection()					//selcted the two fittest individuals

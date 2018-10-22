@@ -27,8 +27,11 @@ int main(int argc, char* argv[])
 	
 	cout << "Generation: " << generationCount << " Fittest: " << setprecision(8) << population.fittest << endl;
 	
-	int loopcount = 0;    
-	while (loopcount < 100000)		//population.fittest < 5) 		//while population gets an individual with maximum fitness
+	int fitIndex = 0;
+	int loopcount = 0;
+	double *p;
+	p = printMoleculeStructure(fitIndex);
+	while(*(p) > 1 || *(p+1) > 1)		//(loopcount < 100000)		//population.fittest < 5) 		//while population gets an individual with maximum fitness
 	{
 		generationCount = generationCount + 1;
 
@@ -36,13 +39,10 @@ int main(int argc, char* argv[])
 		
 		crossover();				//do crossover
 
-		/*
 		if (rand() % 7 < 5) 			//do mutation under a random probability
 		{
-		}
-		*/
-
-		mutation();		
+			mutation();
+		}				
 
 		addFittestOffspring();			//add fittest offspring to population
 
@@ -52,13 +52,15 @@ int main(int argc, char* argv[])
 		cout << "Generation: " << generationCount << " Fittest: " << setprecision(8) << population.fittest << endl;
 		
 		loopcount++;
+		fitIndex = population.getFittest();
+		p = printMoleculeStructure(fitIndex);
 	}
 
 	cout << "\nSolution found in generation " << generationCount << endl;		//diplay fitness and fitest invidiual
 	cout << "Fitness: " << setprecision(8) << population.fittest << endl;
 	cout << "Genes: " << endl;
 
-	int fitIndex = population.getFittest();
+	fitIndex = population.getFittest();
 	for (int i = 0; i < molecule.geneSize; i++) 
 	{
 		cout << population.individuals[fitIndex].genes[i];
