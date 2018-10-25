@@ -81,4 +81,34 @@ int Population :: getLeastFittestIndex()
 	return minFitIndex;
 }
 
+void Population :: sortFittest()
+{
+	vector<Individual> tempPop;	//create temporary list
+	tempPop.reserve(popSize);
+	//tempPop.resize(popSize);
+
+	bool leastFit = true;
+	tempPop.push_back(individuals[0]);		//move 1st individual to temp
+	vector<Individual>::iterator it1;
+	vector<Individual>::iterator it2;
+	for(it1 = individuals.begin()+1; it1 != individuals.end(); it1++)		//go through entire population
+	{
+		for(it2 = tempPop.begin(); it2 != tempPop.end(); it2++)
+		{
+			cout << "fire 1" << endl;
+			if(it1 -> fitness > it2 -> fitness)	//insert individual between more fit/least fit individuals
+			{
+				cout << "fire 2" << endl;
+				tempPop.insert(it2, *it1);
+				leastFit = false;
+				break;
+			}
+		}
+		if(leastFit)
+		{
+			tempPop.push_back(*it1);
+		}
+	}
+}
+
 #endif

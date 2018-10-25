@@ -79,14 +79,17 @@ void Individual :: setValues()
 //calculate fitness based on inputed system energy
 void Individual :: calcFitness(double systemEnergy)
 {
+	fitness = rand() % 10;
+	/*
 	if(systemEnergy != 0)		//higher negative energies -> increased fitness
 	{
-		fitness = (-1) * systemEnergy;
+		fitness = systemEnergy;		//mabye flip sign or not?
 	}
 	else		//if it's zero then no interaction -> very unfit
 	{
 		fitness = -1000.0;
 	}
+	*/
 }
 
 //checks if the genes where changed

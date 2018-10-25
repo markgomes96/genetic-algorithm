@@ -15,7 +15,7 @@ INCLUDES   = includes.h
 HEADERS    = Molecule.h Individual.h Population.h structs.h
 PROTOTYPES = prototypes.h
 GLOBALS    = globals.h
-OBJS 	   = Molecule.o Individual.o Population.o genalg.o
+OBJS 	   = Molecule.o Individual.o Population.o genalg.o genetester.o
 
 all : mingen
 
@@ -33,6 +33,9 @@ Population.o : Population.cc $(INCLUDES) $(HEADERS)
 
 genalg.o : genalg.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES)
 	$(C++) -c genalg.cc
+
+genetester.o : genetester.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES)
+	$(C++) -c genetester.cc
 
 main.o : main.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES) $(OBJS) 
 	$(C++) -c main.cc

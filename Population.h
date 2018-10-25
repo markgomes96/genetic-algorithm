@@ -19,6 +19,7 @@ class Population
 	int getFittest();
 	int getSecondFittest();
 	int getLeastFittestIndex();
+	void sortFittest();
 };
 
 #endif
