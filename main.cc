@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 			if(generationCount % EXTINCTION_PERIOD == 0)
 			{
 				cout << endl << "***EXTINCTION***" << endl;
-				population.displacePopulation(100.0);
+				population.displacePopulation(90.0);		//mabye only kill off most not all of population?
 			}
 		}
 		
