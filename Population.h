@@ -20,6 +20,7 @@ class Population
 	int getSecondFittest();
 	int getLeastFittestIndex();
 	void sortFittest();
+	void displacePopulation(float percentPop);
 };
 
 #endif

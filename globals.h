@@ -9,7 +9,13 @@ using namespace std;
 
 //CONSTANTS
 #define TEST_PROGRAM "obenergy"
-#define POPULATION_SIZE 10
+#define POPULATION_SIZE 1000
+
+#define EXTINCTION_PERIOD 100
+#define EXTINCTION_THRESHOLD 1.0
+
+#define MIGRATION_PERIOD 100
+#define MIGRATION_PERCENT 10.0
 
 //GLOBALS
 extern Molecule molecule;

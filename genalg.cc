@@ -7,6 +7,12 @@
 #include "Individual.h"
 #include "Population.h"
 
+/*
+*Allow mating of top 10% with each other randomly
+*Store offspring in global vector
+*Replace last 10% with offspring 
+*/
+
 void selection()					//selcted the two fittest individuals
 {
 	//Select the most fittest individual
@@ -15,7 +21,6 @@ void selection()					//selcted the two fittest individuals
 	fittest.genes.resize(molecule.geneSize);
 	for(int i = 0; i < population.individuals[0].geneLength; i++)
 	{
-		
 		fittest.genes[i] = population.individuals[fitIndex].genes[i];
 	}
 
@@ -95,6 +100,7 @@ void addFittestOffspring()			//replace least fittest individual from most fittes
 	{
 		population.individuals[leastFittestIndex].genes[i] = fittest.genes[i];
 	}
+	testIndividual(leastFittestIndex);
 
 	//get index for second fit individual
 	leastFittestIndex = population.getLeastFittestIndex();

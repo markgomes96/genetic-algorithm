@@ -17,23 +17,9 @@ int main(int argc, char* argv[])
 
 	population.initializePopulation(POPULATION_SIZE, molecule.geneSize, molecule.atomCount);		//initialize the population
 
-	//sort method test
-	for(int i = 0; i < population.popSize; i++)
-	{
-		population.individuals[i].calcFitness(0.00);
-		cout << "Ind : " << i << " 		Fitness : " << setprecision(8) << population.individuals[i].fitness << endl;
-	}
-	//testPopulation();
-	population.sortFittest();
-	for(int i = 0; i < population.popSize; i++)
-	{
-		cout << "Ind : " << i << " 		Fitness : " << setprecision(8) << population.individuals[i].fitness << endl;
-	}
-	//
-
-	/*
 	testPopulation();			//execute each individual in test program to calcuate fitness
-	population.getFittest();
+	population.sortFittest();
+	population.getFittest();	//move getFittest method over to sortFittest?
 
 	for(int i = 0; i < population.popSize; i++)
 	{
@@ -44,10 +30,12 @@ int main(int argc, char* argv[])
 	
 	int fitIndex = 0;
 	int leastFitIndex = 0;
-	//int loopcount = 0;
-	double *p;
-	p = printMoleculeStructure(fitIndex);
-	while(*(p) > 1 || *(p+1) > 1.5)		//(loopcount < 100000)		//population.fittest < 5) 		//while population gets an individual with maximum fitness
+	int loopcount = 0;
+	//double *p;
+	//p = printMoleculeStructure(fitIndex);
+	bool extinctionFlag = true;
+
+	while /*(*(p) > 10 || *(p+1) > 10)*/    (loopcount < 1000000)    /*population.fittest < 5)*/ 		//while population gets an individual with maximum fitness
 	{
 		generationCount = generationCount + 1;
 
@@ -56,24 +44,61 @@ int main(int argc, char* argv[])
 		crossover();				//do crossover
 
 		if (rand() % 7 < 5) 			//do mutation under a random probability
-		{
 			mutation();
-		}				
 
 		addFittestOffspring();			//add fittest offspring to population
 
-		testPopulation();				//calculate new fitness values
-		
-		//loopcount++;
-		fitIndex = population.getFittest();
-		cout << "Generation: " << generationCount << " Fittest: " << setprecision(8) << population.fittest << endl;
-		p = printMoleculeStructure(fitIndex);
+		/*
+		for(int i = 0; i < population.popSize; i++)
+			cout << "Ind : " << i << " 		Fitness : " << setprecision(8) << population.individuals[i].fitness << endl;
+		cout << "***********************************************" << endl;
+		*/
+	
+		testPopulation();			//calculate new fitness values
 
-		leastFitIndex = population.getLeastFittestIndex();			//replace least fit with new individual
-		Individual newInd;
-		newInd.setGeneLength(molecule.geneSize, molecule.atomCount);
-		newInd.setValues();
-		population.individuals[leastFitIndex] = newInd;
+		/*
+		for(int i = 0; i < population.popSize; i++)
+			cout << "Ind : " << i << " 		Fitness : " << setprecision(8) << population.individuals[i].fitness << endl;
+		cout << "***********************************************" << endl;
+		*/
+
+		population.sortFittest();		//sort population by fittess		
+
+		loopcount++;
+		fitIndex = population.getFittest();
+		
+		/*
+		for(int i = 0; i < population.popSize; i++)
+			cout << "Ind : " << i << " 		Fitness : " << setprecision(8) << population.individuals[i].fitness << endl;
+		cout << "***********************************************" << endl;
+		*/
+
+		if(population.fittest > EXTINCTION_THRESHOLD)
+			extinctionFlag = false;
+
+		if(extinctionFlag)					//handles extinction events
+		{
+			if(generationCount % EXTINCTION_PERIOD == 0)
+			{
+				cout << endl << "***EXTINCTION***" << endl;
+				population.displacePopulation(100.0);
+			}
+		}
+		
+		if(generationCount % MIGRATION_PERIOD == 0)		//handles migration events
+		{
+			cout << endl << "***MIGRATION***" << endl;
+			population.displacePopulation(10.0);
+		}
+
+		cout << "Generation: " << generationCount << " Fittest: " << setprecision(8) << population.fittest << endl;	//print generation info
+		//p = printMoleculeStructure(fitIndex);				//print molecule structure
+
+		/*
+		for(int i = 0; i < population.popSize; i++)
+			cout << "Ind : " << i << " 		Fitness : " << setprecision(8) << population.individuals[i].fitness << endl;
+		cout << "***********************************************" << endl;
+		*/
 	}
 
 	cout << "\nSolution found in generation " << generationCount << endl;		//diplay fitness and fitest invidiual
@@ -91,5 +116,4 @@ int main(int argc, char* argv[])
 
 	cout << "\n \n MINIMUM ENERGY OF SYSTEM : " << setprecision(8) << -(population.fittest) << endl;
 	cout << endl;
-	*/
 }
