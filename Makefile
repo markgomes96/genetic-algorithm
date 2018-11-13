@@ -40,9 +40,14 @@ genetester.o : genetester.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES)
 main.o : main.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES) $(OBJS) 
 	$(C++) -c main.cc
 
+datagraph : datagraph.o
+	$(C++) -o datagraph datagraph.o $(INCDIRS) $(LIBDIRS) $(LDLIBS)
+
+datagraph.o : datagraph.cc
+	$(C++) -c datagraph.cc
 
 clean :
-	rm gatest.xyz
+	rm gentest.xyz
 	rm *.o
 
 reset :
