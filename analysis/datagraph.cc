@@ -35,7 +35,6 @@ double createFile(data d);
 double testFile(string fileInfo[], string ff);
 string executeCommand(const char* cmd); 
 string getEnergy(string output);
-bool isNum(string line);	
 
 double plotstart = 0.5;
 double plotend = 5.0;
@@ -147,15 +146,6 @@ string getEnergy(string output)		//retrieve energy value from buffer string
 	}
 	ss.str("");
 
-	if(isNum(words.end()[-2]))
-		return words.end()[-2];			//return 2nd to last string value
-	else
-		return "0.0";
-}
-
-bool isNum(string line)
-{
-    char* p;
-    strtol(line.c_str(), &p, 10);
-    return *p == 0;
+	cout << words.end()[-2] << endl;
+	return words.end()[-2];			//return 2nd to last string value
 }
