@@ -50,7 +50,15 @@ clean :
 	rm gentest.xyz
 	rm *.o
 
-reset :
+pristine :
 	rm gentest.xyz
 	rm *.o
 	rm mingen
+
+dgclean :
+	rm ./analysis/*.eps
+
+dgpristine :
+	rm ./analysis/*.dat
+	rm ./analysis/*.eps
+	rm ./analysis/datagraph

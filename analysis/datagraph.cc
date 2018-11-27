@@ -37,8 +37,8 @@ string executeCommand(const char* cmd);
 string getEnergy(string output);
 
 double plotstart = 0.5;
-double plotend = 5.0;
-double it = 0.05;
+double plotend = 4.0;
+double it = 0.005;
 int ffc = 5;
 string ffnames[5] = {"GAFF", "GHEMICAL", "MMFF94", "MMFF94s", "UFF"}; 
 
@@ -67,8 +67,17 @@ int main(int argc, char* argv[])
 		cout << endl;
 	}
 
-	//***create file with data form plot array
-	//choose way to graph all that data -> gnuplot?
+	for(int i = 0; i < ffc; i++)			//store all the data in files for each force field type
+	{
+		string fileName = ffnames[i] + ".dat";
+		ofstream file;
+		file.open(fileName);
+		for(int j = 0; j < dc; j++)
+		{
+			file << fixed << plots[i][j].bondDistance << "    " << plots[i][j].systemEnergy << endl;
+		}
+		file.close();
+	}		
 }
 
 double createFile(data d)
