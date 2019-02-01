@@ -45,6 +45,42 @@ string ffnames[5] = {"GAFF", "GHEMICAL", "MMFF94", "MMFF94s", "UFF"};
 int main(int argc, char* argv[])
 {
 	int dc = ((plotend - plotstart) / it) + 1;
+
+#ifdef ZMT
+	data plots[dc]
+
+	for(int i = 0; i < dc; i++)			//declare the plot points
+	{
+		plots[i] = data("", (plotstart + (it*j)), 0.0);
+#ifdef PRINT
+		cout << plots[i].forceField << " : " << plots[i].bondDistance << " : " << plots[i].systemEnergy << endl; 
+	}
+	cout << "**********************" << endl << endl;
+#else
+	}
+#endif
+
+	for(int i = 0; i < dc; i++)			//test all the plot points
+    {
+    	plots[i].systemEnergy = createFile(plots[i]); 		//store the system energy
+#ifdef PRINT
+        cout << plots[i].forceField << " : " << plots[i].bondDistance << " : " << plots[i].systemEnergy << endl; 
+    }
+    cout << endl;
+#else
+	}
+#endif
+
+	string fileName = "plots.dat"
+	ofstream file;
+	file.open(fileName);
+	for(int i = 0; i < dc; i++)
+	{
+		file << fixed << plots[i].bondDistance << "    " << plots[i].systemEnergy << endl;
+	}
+	file.close();
+
+#else
 	data plots[ffc][dc];
 
 	for(int i = 0; i < ffc; i++)		//declare the plot points
@@ -52,20 +88,30 @@ int main(int argc, char* argv[])
 		for(int j = 0; j < dc; j++)
 		{
 			plots[i][j] = data(ffnames[i], (plotstart + (it*j)), 0.0);
+#ifdef PRINT
 			cout << "( " << i << " , " << j << " ) : " << plots[i][j].forceField << " : " << plots[i][j].bondDistance << " : " << plots[i][j].systemEnergy << endl; 
 		}
 	}
 	cout << "**********************" << endl << endl;	
+#else
+		}
+	}
+#endif
 
 	for(int i = 0; i < ffc; i++)		//test all the plot points
 	{
 		for(int j = 0; j < dc; j++)
 		{
-			plots[i][j].systemEnergy = createFile(plots[i][j]);	//store the system energy
+			plots[i][j].systemEnergy = createFile(plots[i][j]);			//store the system energy
+#ifdef PRINT
 			cout << "( " << i << " , " << j << " ) : " << plots[i][j].forceField << " : " << plots[i][j].bondDistance << " : " << plots[i][j].systemEnergy << endl; 
 		}
 		cout << endl;
 	}
+#else
+		}
+	}
+#endif
 
 	for(int i = 0; i < ffc; i++)			//store all the data in files for each force field type
 	{
@@ -77,7 +123,8 @@ int main(int argc, char* argv[])
 			file << fixed << plots[i][j].bondDistance << "    " << plots[i][j].systemEnergy << endl;
 		}
 		file.close();
-	}		
+	}
+#endif	
 }
 
 double createFile(data d)
@@ -91,6 +138,14 @@ double createFile(data d)
 		fileInfo[x].clear();
 	}
 
+#ifdef ZMT
+	fileInfo[0] = "O";
+	fileInfo[1] = "O 1 r1"
+	fileInfo[2] = "";
+	ss << "r1 " << d.bondDistance;
+	fileInfo[3] = ss.str();
+	ss.str("");
+#else
 	fileInfo[0] = "2";
 	fileInfo[1] = "";
 	
@@ -99,15 +154,20 @@ double createFile(data d)
 	ss.str("");
 
 	fileInfo[3] = "O 0.0000 0.0000 0.0000";
+#endif
 
 	return testFile(fileInfo, d.forceField);	//test individual to determine fitness
 }
 
 double testFile(string fileInfo[], string ff)
 {
+#ifdef ZMT
+	string fileName = "snifr.zmt";
+#else
 	string fileName = "o2.xyz";		//create file based on individual
+#endif
 	ofstream file;
-	file.open(fileName);
+	file.open(fileName, ios::out | ios::trunc);
 	for(int i = 0; i < 4; i++)
 	{
 		file << fileInfo[i] << endl;
@@ -115,7 +175,11 @@ double testFile(string fileInfo[], string ff)
 	file.close();
 	
 	stringstream ss;
+#ifdef ZMT
+	ss << "traject3d";
+#else
 	ss << "obenergy " << "-ff " << ff << " " << fileName;
+#endif
 	string command = ss.str();		//convert string command to char array
 	ss.str("");
 	char char_command[command.length()+1];
@@ -155,6 +219,8 @@ string getEnergy(string output)		//retrieve energy value from buffer string
 	}
 	ss.str("");
 
-	cout << words.end()[-2] << endl;
-	return words.end()[-2];			//return 2nd to last string value
+#ifdef PRINT
+	cout << "energy : " << words.end()[-1] << endl;
+#endif
+	return words.end()[-1];			//return 2nd to last string value
 }

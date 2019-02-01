@@ -8,7 +8,7 @@
 using namespace std;
 
 //CONSTANTS
-#define TEST_PROGRAM "obenergy"
+#define TEST_PROGRAM "obenergy -ff UFF"
 #define POPULATION_SIZE 1000
 
 #define EXTINCTION_PERIOD 100

@@ -40,11 +40,15 @@ genetester.o : genetester.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES)
 main.o : main.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES) $(OBJS) 
 	$(C++) -c main.cc
 
+#analysis
+
+CFLAG=
+
 datagraph : datagraph.o
-	$(C++) -o datagraph datagraph.o $(INCDIRS) $(LIBDIRS) $(LDLIBS)
+	$(C++) $(CFLAG) -o datagraph datagraph.o $(INCDIRS) $(LIBDIRS) $(LDLIBS)
 
 datagraph.o : datagraph.cc
-	$(C++) -c datagraph.cc
+	$(C++) $(CFLAG) -c datagraph.cc
 
 clean :
 	rm gentest.xyz

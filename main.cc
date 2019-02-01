@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 	//p = printMoleculeStructure(fitIndex);
 	bool extinctionFlag = true;
 
-	while /*(*(p) > 10 || *(p+1) > 10)*/    (loopcount < 1000000)    /*population.fittest < 5)*/ 		//while population gets an individual with maximum fitness
+	while /*(*(p) > 10 || *(p+1) > 10)*/    /*(loopcount < 1000)*/    (population.fittest < 0.2512) 		//while population gets an individual with maximum fitness
 	{
 		generationCount = generationCount + 1;
 
@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
 	}
 	cout << endl;
 	
-	printMoleculeStructure(fitIndex);
+	//printMoleculeStructure(fitIndex);
 
 	cout << "\n \n MINIMUM ENERGY OF SYSTEM : " << setprecision(8) << -(population.fittest) << endl;
 	cout << endl;
