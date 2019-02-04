@@ -46,6 +46,10 @@ void testIndividual(int ind)
 		}
 	}
 
+	/*
+	* Convert .xyz format to .zmt format
+	*/
+
 	testGenes(fileInfo, ind);	//test individual to determine fitness
 }
 
