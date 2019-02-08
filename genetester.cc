@@ -31,7 +31,7 @@ void testIndividual(int ind)
 		fileInfo[x].clear();
 	}
 	ss << molecule.atomCount;
-	fileInfo[0] = ss.str();
+	fileInfo[0] = ss.str();			//************remove first 2 lines
 	ss.str("");
 	fileInfo[1] = "";
 	
@@ -150,6 +150,10 @@ string getEnergy(string output)
 	ss.str("");
 	return words.end()[-2];			//return 2nd to last string value
 }
+
+/*
+***Print molecule structure
+*/
 
 double* printMoleculeStructure(int ind)
 {
