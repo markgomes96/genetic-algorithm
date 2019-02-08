@@ -6,34 +6,9 @@
 
 using namespace std;
 
-typedef struct vect3d		//stores data for a 3D vector used for calcualtions
-{
-	float x;
-	float y;
-	float z;
-
-	vect3d()
-	{}
-
-	vect3d(float _x, float _y, float _z)
-	{
-		x = _x;
-		y = _y;
-		z = _z;
-	}
-} vect3d;
-
-typedef struct atom
-{
-	string element;
-	atom root;		//connected atom  //***modify this
-	vect3d position;
-}
-
 int main(int argc, char* argv[])
 {
-	vector<atom> atoms;
-
+	/*
 	ifstream testfile;			//read in test file to understand molecule structure
 	ifstream xyzfile;			//read in .xyz file to convert
 
@@ -77,9 +52,5 @@ int main(int argc, char* argv[])
 	{
 		cout << *it << endl;
 	}
-}
-
-vect3d vectDistance(vect3d v1, vect3d v2)
-{
-
+	*/
 }
