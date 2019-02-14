@@ -1,10 +1,28 @@
 //Program converts .xyz format to .zmt format
+
 #include <iostream>
-#include <string>
+#include <sstream>
 #include <fstream>
+#include <string>
 #include <vector>
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <ctime>
+#include <memory>
+#include <stdexcept>
+#include <bits/stdc++.h> 
+#include <algorithm>
 
 using namespace std;
+
+void convertToXYZFile(string fileInfo[]);
+void convertXYZToCOM();
+void convertCOMToZMT(string output);
+string executeCommand(const char* cmd);
+
+void testConvert();		//***move into convertCOMToZMT
 
 void convertToXYZFile(string fileInfo[])	//convert string array to xyz file
 {
@@ -18,16 +36,65 @@ void convertToXYZFile(string fileInfo[])	//convert string array to xyz file
 	file.close();
 }
 
-void convertXYZToZMT()
+void testConvert()
 {
-	string command = "newzmat -ixyz genalg.xyz -rebuildzmat -ozmat genalg.com" + string(fileName);		//convert string command to char array
+	ifstream fileIn;
+	string fileName1 = "benzene.com";
+	fileIn.open(fileName1);
+	vector<string> zmatInfo;
+	string buffer;
+
+	for(int i = 0; i < 6; i++)		//iterate to correct start in .com file
+	{
+		getline(fileIn, buffer, '\n');
+	}
+	
+	cout << "****************" << endl;
+
+	buffer.erase(remove(buffer.begin(), buffer.end(), ' '), buffer.end());
+
+	while(strcmp(buffer.c_str(), "Variables:") != 0 && fileIn.good())	//retrieve zmat with variables
+	{
+		replace( buffer.begin(), buffer.end(), ',', ' ');
+		zmatInfo.push_back(buffer);
+
+		getline(fileIn, buffer, '\n');
+		buffer.erase(remove(buffer.begin(), buffer.end(), ' '), buffer.end());
+	}
+	zmatInfo.push_back("");
+
+	getline(fileIn, buffer, '\n');
+	while(strcmp(buffer.c_str(), "") != 0 && fileIn.good())			//retrieve variables values
+	{
+		buffer.erase(remove(buffer.begin(), buffer.end(), ' '), buffer.end());
+		replace( buffer.begin(), buffer.end(), '=', ' ');
+		zmatInfo.push_back(buffer);
+		getline(fileIn, buffer, '\n');
+	}
+
+	fileIn.close();
+
+	string fileName2 = "benzene.zmt";		//create file based on individual
+	ofstream fileOut;
+	fileOut.open(fileName2);
+	for(int i = 0; i < zmatInfo.size(); i++)
+	{
+		fileOut << zmatInfo[i].c_str() << endl;
+		cout << zmatInfo[i].c_str() << endl;
+	}
+	fileOut.close();
+}
+
+void convertXYZToCOM()
+{
+	string command = "newzmat -ixyz genalg.xyz -rebuildzmat -ozmat genalg.com";		//convert string command to char array
 	char char_command[command.length()+1];
 	strcpy(char_command, command.c_str());
 
-	getZMAT(executeCommand(char_command));
+	convertCOMToZMT(executeCommand(char_command));
 }
 
-void getZMAT(string output)		//***start here - change to cut out zmat
+void convertCOMToZMT(string output)		//***start here - change to cut out zmat
 {
 	string buf;                 	//have a buffer string
 	stringstream ss(output);       	//insert the string into a stream
@@ -40,8 +107,6 @@ void getZMAT(string output)		//***start here - change to cut out zmat
 		zmatInfo.push_back(buf);
 	}
 	ss.str("");
-
-	//return words.end()[-2];			//return 2nd to last string value
 
 	string fileName = "genalg.zmt";		//create file based on individual
 	ofstream file;
@@ -73,6 +138,7 @@ string executeCommand(const char* cmd) 			//execute command and retrieve the out
 
 int main(int argc, char* argv[])
 {
+	/*
 	ifstream xyzfile;			//read in .xyz file to convert
 
 	if(argc == 2)
@@ -95,10 +161,14 @@ int main(int argc, char* argv[])
 	getline(xyzfile, fileInfo[0], '\n');
 	getline(xyzfile, fileInfo[1], '\n');
 	getline(xyzfile, fileInfo[2], '\n');
+	xyzfile.close();
 
 	cout << fileInfo[0] << endl << fileInfo[1] << endl << fileInfo[2] << endl;
 
 	convertToXYZFile(fileInfo);
+	*/
 
-	convertXYZToZMT();
+	testConvert();
+
+	//convertXYZToCOM();
 }

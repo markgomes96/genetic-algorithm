@@ -44,6 +44,14 @@ main.o : main.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES) $(OBJS)
 
 CFLAG=
 
+zmtconv : zmtconv.o
+	$(C++) $(CFLAG) -o zmtconv zmtconv.o $(INCDIRS) $(LIBDIRS) $(LDLIBS)
+
+zmtconv.o : zmtconv.cc
+	$(C++) $(CFLAG) -c zmtconv.cc
+
+#zmtconv
+
 datagraph : datagraph.o
 	$(C++) $(CFLAG) -o datagraph datagraph.o $(INCDIRS) $(LIBDIRS) $(LDLIBS)
 
