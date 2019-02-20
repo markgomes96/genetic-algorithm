@@ -5,8 +5,10 @@
 #                 
 # A binary named mingen will be produced
 
+#c++, gcc, pgcc, pgf77
+
 CC = gcc
-C++ = g++ 
+C++ = c++
 LIBDIRS = -L/usr/lib64
 INCDIRS = -I/usr/include
 LDLIBS =  -lglut -lGL -lGLU -lX11 -lm
@@ -42,21 +44,19 @@ main.o : main.cc $(INCLUDES) $(HEADERS) $(PROTOTYPES) $(OBJS)
 
 #analysis
 
-CFLAG=
-
 zmtconv : zmtconv.o
-	$(C++) $(CFLAG) -o zmtconv zmtconv.o $(INCDIRS) $(LIBDIRS) $(LDLIBS)
+	$(C++) -o zmtconv zmtconv.o $(INCDIRS) $(LIBDIRS) $(LDLIBS)
 
 zmtconv.o : zmtconv.cc
-	$(C++) $(CFLAG) -c zmtconv.cc
+	$(C++) -c zmtconv.cc
 
 #zmtconv
 
 datagraph : datagraph.o
-	$(C++) $(CFLAG) -o datagraph datagraph.o $(INCDIRS) $(LIBDIRS) $(LDLIBS)
+	$(C++) -o datagraph datagraph.o $(INCDIRS) $(LIBDIRS) $(LDLIBS)
 
 datagraph.o : datagraph.cc
-	$(C++) $(CFLAG) -c datagraph.cc
+	$(C++) -c datagraph.cc
 
 clean :
 	rm gentest.xyz
