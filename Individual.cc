@@ -29,15 +29,15 @@ void Individual :: setValues()
 	int randInt;
 	for (int i = 0; i < geneLength; i += ((geneLength / atomCount) / 3)) 		//iterate through every dimension for every atom
 	{
-    		randInt = rand() % 2;		//set sign bit 0-1
+    	randInt = rand() % 2;		//set sign bit 0-1
 		if(randInt == 1)
 		{
     		genes[i] = 1;
  		}
-    		else
-    		{
-        		genes[i] = 0;
-    		}
+    	else
+    	{
+        	genes[i] = 0;
+    	}
 
 		for(int j = i + 1; j < i + (((geneLength / atomCount) / 3) - 1); j = j + 4)		//iterate through every decimal digit
 		{

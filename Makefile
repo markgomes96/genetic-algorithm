@@ -59,11 +59,9 @@ datagraph.o : datagraph.cc
 	$(C++) -c datagraph.cc
 
 clean :
-	rm gentest.xyz
 	rm *.o
 
 pristine :
-	rm gentest.xyz
 	rm *.o
 	rm mingen
 

@@ -9,7 +9,7 @@ using namespace std;
 
 //CONSTANTS
 #define TEST_PROGRAM "obenergy -ff UFF"
-#define POPULATION_SIZE 1000
+#define POPULATION_SIZE 10
 
 #define EXTINCTION_PERIOD 100
 #define EXTINCTION_THRESHOLD 0.2

@@ -7,12 +7,6 @@
 #include "Individual.h"
 #include "Population.h"
 
-/*
-*Allow mating of top 10% with each other randomly
-*Store offspring in global vector
-*Replace last 10% with offspring 
-*/
-
 void selection()					//selcted the two fittest individuals
 {
 	//Select the most fittest individual

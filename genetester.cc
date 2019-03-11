@@ -22,49 +22,48 @@ void testPopulation()		//run individual's gene through tester program
 void testIndividual(int ind)
 {
 	//convert genes to string, match with element, and write string to .xyz file
-	string fileInfo[molecule.atomCount + 2];
+	int fileSize = molecule.atomCount /*+ 2*/;
+	string fileInfo[fileSize];
 	string elementInfo;
 	stringstream ss;
 
-	for(int x = 0; x < molecule.atomCount + 2; x++)		//sets up number of atoms at top of file
+	for(int x = 0; x < molecule.atomCount /*+ 2*/; x++)		//clear out fileInfo
 	{
 		fileInfo[x].clear();
 	}
+	/*
 	ss << molecule.atomCount;
-	fileInfo[0] = ss.str();			//************remove first 2 lines
+	fileInfo[0] = ss.str();		// write atom count
 	ss.str("");
 	fileInfo[1] = "";
-	
+	*/	
+
 	int fractCount = 0;
 	for(int j = 0; j < molecule.atoms.size(); j++)		//iterate through types of atoms
 	{
 		for(int k = 0; k < molecule.atoms[j].count; k++)	//iterate through count of type of atom
 		{
 			elementInfo = molecule.atoms[j].element + " " + geneToStringConverter(population.individuals[ind].genes, molecule.atomCount, fractCount);
-			fileInfo[2+fractCount] = elementInfo;
+			fileInfo[/*2+*/fractCount] = elementInfo;
 			fractCount++;
 		}
 	}
 
-	/*
-	* Convert .xyz format to .zmt format
-	*/
+	//*** Convert .xyz format to .zmt format
+	convertToXYZFile(fileInfo, fileSize);
+	string testFile = "snifr.zmt";				// test file accessed by traject3d
+	convertXYZToCOM(testFile);
+	//***
 
-	testGenes(fileInfo, ind);	//test individual to determine fitness
+	testGenes(ind);				//test individual to determine fitness
 }
 
-void testGenes(string fileInfo[], int ind)
-{
-	string fileName = "gentest.xyz";		//create file based on individual
-	ofstream file;
-	file.open(fileName);
-	for(int i = 0; i < (molecule.atomCount + 2); i++)
-	{
-		file << fileInfo[i] << endl;
-	}
-	file.close();
-	
-	string command = string(TEST_PROGRAM) + " " + string(fileName);		//convert string command to char array
+void testGenes(int ind)
+{	
+	stringstream ss;
+	ss << "traject3d";
+	string command = ss.str();		//convert string command to char array
+	ss.str("");
 	char char_command[command.length()+1];
 	strcpy(char_command, command.c_str());
 	
@@ -135,7 +134,7 @@ string executeCommand(const char* cmd) 			//execute command and retrieve the out
 	return result;
 }
 
-string getEnergy(string output)
+string getEnergy(string output)		//retrieve energy value from buffer string
 {
 	string buf;                 	//have a buffer string
 	stringstream ss(output);       	//insert the string into a stream
@@ -146,136 +145,78 @@ string getEnergy(string output)
 	{
 		words.push_back(buf);
 	}
-	
 	ss.str("");
-	return words.end()[-2];			//return 2nd to last string value
+
+	cout << "energy : " << words[1] << endl;
+
+	return words[1];			//return 2nd to last string value
 }
 
-/*
-***Print molecule structure
-*/
-
-double* printMoleculeStructure(int ind)
+void convertToXYZFile(string fileInfo[], int fileSize)	//convert string array to xyz file
 {
-	//convert genes to string, match with element, and write string to .xyz file
-	string fileInfo[molecule.atomCount + 2];
-	string elementInfo;
-	stringstream ss;
-
-	for(int x = 0; x < molecule.atomCount + 2; x++)		//sets up number of atoms at top of file
+	string fileName = "genalg.xyz";		//create file based on individual
+	ofstream file;
+	file.open(fileName);
+	for(int i = 0; i < fileSize; i++)
 	{
-		fileInfo[x].clear();
+		file << fileInfo[i] << endl;
 	}
-	ss << molecule.atomCount;
-	fileInfo[0] = ss.str();
-	ss.str("");
-	fileInfo[1] = "";
-	
-	int fractCount = 0;
-	for(int j = 0; j < molecule.atoms.size(); j++)		//iterate through types of atoms
-	{
-		for(int k = 0; k < molecule.atoms[j].count; k++)	//iterate through count of type of atom
-		{
-			elementInfo = molecule.atoms[j].element + " " + geneToStringConverter(population.individuals[ind].genes, molecule.atomCount, fractCount);
-			fileInfo[2+fractCount] = elementInfo;
-			fractCount++;
-		}
-	}
-
-	cout << endl << "ELEMENT  |   X   |   Y   |   Z   |" << endl << endl;
-	for(int i = 2; i < (molecule.atomCount + 2); i++)
-	{
-		cout << fileInfo[i] << endl;
-	}
-
-	vector<string> h1sa;			//calculate bond distance between H - O
-	int strpos = 0;
-	const char* strdata = fileInfo[2].c_str();
-	for(int i = 0; i < 3; i++)
-	{
-		for(int j = strpos; j < fileInfo[2].length(); j++)
-		{
-			if(strdata[j] == ' ')
-			{
-				if(strdata[j+1] != '-')
-				{
-					h1sa.push_back(fileInfo[2].substr(j+1,7));
-				}
-				else
-				{
-					h1sa.push_back(fileInfo[2].substr(j+1,8));
-				}
-				strpos = j+1;
-				break;
-			}
-		}
-	}
-	
-	vector<string> h2sa;
-	strpos = 0;
-	strdata = fileInfo[3].c_str();
-	for(int i = 0; i < 3; i++)
-	{
-		for(int j = strpos; j < fileInfo[3].length(); j++)
-		{
-			if(strdata[j] == ' ')
-			{
-				if(strdata[j+1] != '-')
-				{
-					h2sa.push_back(fileInfo[3].substr(j+1,7));
-				}
-				else
-				{
-					h2sa.push_back(fileInfo[3].substr(j+1,8));
-				}
-				strpos = j+1;
-				break;
-			}
-		}
-	}
-
-	vector<string> o1sa; 
-	strpos = 0;
-	strdata = fileInfo[4].c_str();
-	for(int i = 0; i < 3; i++)
-	{
-		for(int j = strpos; j < fileInfo[4].length(); j++)
-		{
-			if(strdata[j] == ' ')
-			{
-				if(strdata[j+1] != '-')
-				{
-					o1sa.push_back(fileInfo[4].substr(j+1,7));
-				}
-				else
-				{
-					o1sa.push_back(fileInfo[4].substr(j+1,8));
-				}
-				strpos = j+1;
-				break;
-			}
-		}
-	}
-
-	double h1x = atof(h1sa[0].c_str());
-	double h1y = atof(h1sa[1].c_str());
-	double h1z = atof(h1sa[2].c_str());
-
-	double h2x = atof(h2sa[0].c_str());
-	double h2y = atof(h2sa[1].c_str());
-	double h2z = atof(h2sa[2].c_str());
-
-	double o1x = atof(o1sa[0].c_str());
-	double o1y = atof(o1sa[1].c_str());
-	double o1z = atof(o1sa[2].c_str());
-	
-	double h1o1bond = sqrt( pow((h1x - o1x), 2) + pow((h1y - o1y), 2) + pow((h1z - o1z), 2) );
-	double h2o1bond = sqrt( pow((h2x - o1x), 2) + pow((h2y - o1y), 2) + pow((h2z - o1z), 2) );
-	
-	cout << endl << "H1 - O1 BOND : " << h1o1bond << "A" << endl;
-	cout << "H2 - O1 BOND : " << h2o1bond << "A" << endl;
-
-	static double hobonds[] = { h1o1bond, h2o1bond };
-	return hobonds;
+	file.close();
 }
 
+void convertXYZToCOM(string testFile)
+{
+	string command = "newzmat -ixyz genalg.xyz -rebuildzmat -ozmat genalg.com";		//convert string command to char array
+	char char_command[command.length()+1];
+	strcpy(char_command, command.c_str());
+
+	system(char_command);
+
+	convertCOMToZMT(testFile);
+}
+
+void convertCOMToZMT(string testFile)
+{
+	ifstream comFile;
+	string comFileName = "genalg.com";
+	comFile.open(comFileName);
+	vector<string> zmatInfo;
+	string buffer;
+
+	for(int i = 0; i < 6; i++)		//iterate to correct start in .com file
+	{
+		getline(comFile, buffer, '\n');
+	}
+
+	buffer.erase(remove(buffer.begin(), buffer.end(), ' '), buffer.end());
+
+	while(strcmp(buffer.c_str(), "Variables:") != 0 && comFile.good())	//retrieve zmat with variables
+	{
+		replace( buffer.begin(), buffer.end(), ',', ' ');
+		zmatInfo.push_back(buffer);
+
+		getline(comFile, buffer, '\n');
+		buffer.erase(remove(buffer.begin(), buffer.end(), ' '), buffer.end());
+	}
+	zmatInfo.push_back("");
+
+	getline(comFile, buffer, '\n');
+	while(strcmp(buffer.c_str(), "") != 0 && comFile.good())			//retrieve variables values
+	{
+		buffer.erase(remove(buffer.begin(), buffer.end(), ' '), buffer.end());
+		replace( buffer.begin(), buffer.end(), '=', ' ');
+		zmatInfo.push_back(buffer);
+		getline(comFile, buffer, '\n');
+	}
+
+	comFile.close();
+
+	string zmtFileName = testFile;		// input zmt info to test file modified by traject3d
+	ofstream zmtFile;
+	zmtFile.open(zmtFileName);
+	for(int i = 0; i < zmatInfo.size(); i++)
+	{
+		zmtFile << zmatInfo[i].c_str() << endl;
+	}
+	zmtFile.close();
+}

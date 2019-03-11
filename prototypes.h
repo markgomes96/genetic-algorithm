@@ -1,10 +1,13 @@
 void testPopulation( void );	//genetester.cc
 void testIndividual( int );
-void testGenes( string[] , int );
+void testGenes( int );
 string geneToStringConverter( vector<int> , int , int );
 string executeCommand( const char * );
 string getEnergy( string );
-double* printMoleculeStructure( int );
+void convertToXYZFile( string[] , int );
+void convertXYZToCOM( string );
+void convertCOMToZMT( string );
+//double* printMoleculeStructure( int );
 
 void selection( void );		//genalg.cc
 void crossover( void );
