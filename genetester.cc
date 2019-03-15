@@ -31,12 +31,6 @@ void testIndividual(int ind)
 	{
 		fileInfo[x].clear();
 	}
-	/*
-	ss << molecule.atomCount;
-	fileInfo[0] = ss.str();		// write atom count
-	ss.str("");
-	fileInfo[1] = "";
-	*/	
 
 	int fractCount = 0;
 	for(int j = 0; j < molecule.atoms.size(); j++)		//iterate through types of atoms
@@ -147,8 +141,6 @@ string getEnergy(string output)		//retrieve energy value from buffer string
 	}
 	ss.str("");
 
-	cout << "energy : " << words[1] << endl;
-
 	return words[1];			//return 2nd to last string value
 }
 
@@ -170,7 +162,7 @@ void convertXYZToCOM(string testFile)
 	char char_command[command.length()+1];
 	strcpy(char_command, command.c_str());
 
-	system(char_command);
+	executeCommand(char_command);
 
 	convertCOMToZMT(testFile);
 }

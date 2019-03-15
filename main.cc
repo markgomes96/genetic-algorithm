@@ -34,12 +34,9 @@ int main(int argc, char* argv[])
 	
 	cout << "Generation: " << generationCount << " Fittest: " << setprecision(8) << population.fittest << endl;
 	
-	/*
 	int fitIndex = 0;
 	int leastFitIndex = 0;
 	int loopcount = 0;
-	//double *p;
-	//p = printMoleculeStructure(fitIndex);
 	bool extinctionFlag = true;
 
 	while(loopcount < 1000)    //(population.fittest < 0.2512) 		//while population gets an individual with maximum fitness
@@ -54,25 +51,13 @@ int main(int argc, char* argv[])
 			mutation();
 
 		addFittestOffspring();			//add fittest offspring to population
-
-		//for(int i = 0; i < population.popSize; i++)
-		//	cout << "Ind : " << i << " 		Fitness : " << setprecision(8) << population.individuals[i].fitness << endl;
-		//cout << "***********************************************" << endl;
 	
 		testPopulation();			//calculate new fitness values
-
-		//for(int i = 0; i < population.popSize; i++)
-		//	cout << "Ind : " << i << " 		Fitness : " << setprecision(8) << population.individuals[i].fitness << endl;
-		//cout << "***********************************************" << endl;
 
 		population.sortFittest();		//sort population by fittess		
 
 		loopcount++;
 		fitIndex = population.getFittest();
-		
-		//for(int i = 0; i < population.popSize; i++)
-		//	cout << "Ind : " << i << " 		Fitness : " << setprecision(8) << population.individuals[i].fitness << endl;
-		//cout << "***********************************************" << endl;
 
 		if(population.fittest > EXTINCTION_THRESHOLD)
 			extinctionFlag = false;
@@ -93,11 +78,6 @@ int main(int argc, char* argv[])
 		}
 
 		cout << "Generation: " << generationCount << " Fittest: " << setprecision(8) << population.fittest << endl;	//print generation info
-		//p = printMoleculeStructure(fitIndex);				//print molecule structure
-
-		//for(int i = 0; i < population.popSize; i++)
-		//	cout << "Ind : " << i << " 		Fitness : " << setprecision(8) << population.individuals[i].fitness << endl;
-		//cout << "***********************************************" << endl;
 	}
 
 	cout << "\nSolution found in generation " << generationCount << endl;		//diplay fitness and fitest invidiual
@@ -115,5 +95,14 @@ int main(int argc, char* argv[])
 
 	cout << "\n \n MINIMUM ENERGY OF SYSTEM : " << setprecision(8) << -(population.fittest) << endl;
 	cout << endl;
-	*/
+
+	system("rm genalg.xyz");		// remove utility files
+	system("rm genalg.com");
+}
+
+void printPopulation()
+{
+		for(int i = 0; i < population.popSize; i++)
+			cout << "Ind : " << i << " 		Fitness : " << setprecision(8) << population.individuals[i].fitness << endl;
+		cout << "***********************************************" << endl;
 }
